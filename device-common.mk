@@ -927,3 +927,5 @@ include device/google/gs-common/touch/twoshay/twoshay.mk
 
 # Update soong config namespace
 -include vendor/google/build/soong/soong_config_namespace/qcril_oemhook.mk
+
+-include vendor/lineage-priv/keys/keys.mk
