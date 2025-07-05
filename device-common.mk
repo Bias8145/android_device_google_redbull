@@ -88,7 +88,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ueventd.rc:$(TARGET_COPY_OUT_VENDOR)/ueventd.rc \
 		$(LOCAL_PATH)/init.ramoops.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.ramoops.sh
 
-
 MSM_VIDC_TARGET_LIST := lito # Get the color format from kernel headers
 MASTER_SIDE_CP_TARGET_LIST := lito # ION specific settings
 
@@ -206,8 +205,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.vulkan.level-1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.level.xml \
     frameworks/native/data/etc/android.hardware.vulkan.compute-0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.compute.xml \
     frameworks/native/data/etc/android.hardware.vulkan.version-1_1.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.vulkan.version.xml \
-    frameworks/native/data/etc/android.software.vulkan.deqp.level-2020-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.vulkan.deqp.level.xml \
-    frameworks/native/data/etc/android.software.opengles.deqp.level-2020-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.opengles.deqp.level.xml \
+    frameworks/native/data/etc/android.software.vulkan.deqp.level-2021-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.vulkan.deqp.level.xml \
+    frameworks/native/data/etc/android.software.opengles.deqp.level-2021-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.opengles.deqp.level.xml \
     frameworks/native/data/etc/android.hardware.telephony.carrierlock.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.carrierlock.xml \
     frameworks/native/data/etc/android.hardware.strongbox_keystore.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.strongbox_keystore.xml \
     frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.uicc.xml \
@@ -521,11 +520,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     vendor.audio.snd_card.open.retries=50
 
-
 ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
 # Subsystem ramdump
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.vendor.sys.ssr.enable_ramdumps=1
+    persist.vendor.sys.ssr.enable_ramdumps=0
 endif
 
 # Subsystem silent restart
@@ -547,13 +545,13 @@ PRODUCT_PACKAGES += \
     charger_res_images
 
 ifneq (,$(filter eng, $(TARGET_BUILD_VARIANT)))
-# b/36703476: Set default log size to 1M
+# b/36703476: Set default log size to 256K
 PRODUCT_PROPERTY_OVERRIDES += \
-  ro.logd.size=1M
+  ro.logd.size=256K
 # b/114766334: persist all logs by default rotating on 30 files of 1MiB
 PRODUCT_PROPERTY_OVERRIDES += \
-  logd.logpersistd=logcatd \
-  logd.logpersistd.size=30
+  logd.logpersistd= \
+  logd.logpersistd.size=5
 endif
 
 # Storage: for factory reset protection feature
@@ -622,7 +620,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.systemuicompilerfilter=speed
 
 # Enable stats logging in LMKD
-TARGET_LMKD_STATS_LOG := true
+TARGET_LMKD_STATS_LOG := false
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init.gadgethal.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.gadgethal.sh
@@ -655,7 +653,44 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # Enable backpressure for GL comp
 PRODUCT_PROPERTY_OVERRIDES += \
-    debug.sf.enable_gl_backpressure=1
+    debug.sf.enable_gl_backpressure=0
+
+# Configure experimental prop
+PRODUCT_PRODUCT_PROPERTIES += \
+    debug.hwui.skia_atrace_enabled=false \
+    debug.sf.enable_hwc_vds=0 \
+    debug.sf.predict_hwc_composition_strategy=0 \
+    debug.gr.swapinterval=0 \
+    debug.hwui.render_dirty_regions=false \
+    debug.sf.deferglcontext=0 \
+    debug.sf.cpusets=0 \
+    debug.sf.vsync_switch=0 \
+    debug.sf.triple_buffer=0 \
+    debug.sf.maxlayers=0xff \
+    debug.hwui.render_ahead_mode=0 \
+    debug.hwui.render_ahead=false \
+    debug.hwui.disable_vsync=true \
+    debug.gralloc.wfd_enable=1 \
+    debug.gralloc.map_fb_memory=1 \
+    debug.gralloc.gpu_compression_disable=1 \
+    debug.gralloc.vram_debug=0
+
+# Configure Render used Vulkan
+PRODUCT_PRODUCT_PROPERTIES += \
+    debug.hwui.renderer=skiagl \
+    debug.renderengine.backend=threaded \
+    debug.sf.gpu_comp_tiling=1 \
+    debug.composition.type=hwc \
+    persist.sys.composition.type=hwc
+
+# Dalvik Virtual Machine
+PRODUCT_PRODUCT_PROPERTIES += \
+    persist.sys.dalvik.hyperthreading=true \
+    persist.sys.dalvik.multithread=true
+
+# Disable default frame rate limit for games
+ PRODUCT_PRODUCT_PROPERTIES += \
+    debug.graphics.game_default_frame_rate.disabled=true
 
 BOARD_USES_QCNE := true
 
@@ -754,7 +789,7 @@ persist.vendor.bt.aac_vbr_frm_ctl.enabled=true
 # Set lmkd options
 PRODUCT_PRODUCT_PROPERTIES += \
         ro.config.low_ram ?= false \
-        ro.lmk.log_stats = true \
+        ro.lmk.log_stats = false \
 
 # charger
 PRODUCT_PRODUCT_PROPERTIES += \
@@ -896,3 +931,5 @@ include device/google/gs-common/touch/twoshay/twoshay.mk
 
 # Update soong config namespace
 -include vendor/google/build/soong/soong_config_namespace/qcril_oemhook.mk
+
+-include vendor/lineage-priv/keys/keys.mk
