@@ -677,12 +677,11 @@ PRODUCT_PRODUCT_PROPERTIES += \
 
 # Configure Render used Vulkan
 PRODUCT_PRODUCT_PROPERTIES += \
-    debug.hwui.renderer=vulkan \
-    ro.hwui.use_vulkan=true \
-    debug.renderengine.backend=vulkanthreaded \
+    debug.hwui.renderer=skiagl \
+    debug.renderengine.backend=threaded \
     debug.sf.gpu_comp_tiling=1 \
-    debug.composition.type=vulkan \
-    persist.sys.composition.type=vulkan
+    debug.composition.type=hwc \
+    persist.sys.composition.type=hwc
 
 # Dalvik Virtual Machine
 PRODUCT_PRODUCT_PROPERTIES += \
