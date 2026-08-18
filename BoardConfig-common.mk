@@ -463,7 +463,10 @@ TARGET_USES_HARDWARE_QCOM_AUDIO_MULTIPLE_HW_VARIANTS_ENABLED := true
 TARGET_USES_HARDWARE_QCOM_AUDIO_INCALL_STEREO_CAPTURE_ENABLED := true
 
 # Vendor Interface Manifest
-DEVICE_MANIFEST_FILE := device/google/redbull/manifest.xml
+DEVICE_MANIFEST_FILE += \
+    device/google/redbull/manifest.xml \
+    vendor/lunaris/dolby/vintf/dolby_manifest.xml
+
 DEVICE_MATRIX_FILE := device/google/redbull/compatibility_matrix.xml
 
 # Use mke2fs to create ext4 images
@@ -513,3 +516,6 @@ BOARD_BUILD_VENDOR_RAMDISK_IMAGE := true
 
 # Testing related defines
 BOARD_PERFSETUP_SCRIPT := platform_testing/scripts/perf-setup/b5r3-setup.sh
+
+# Ship Lunaris Dolby
+include vendor/lunaris/dolby/BoardConfigDolby.mk
